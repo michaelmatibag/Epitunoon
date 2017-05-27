@@ -37,6 +37,7 @@
     <Compile Include="Integration\RestExecutor\RestExecutor.cs" />
     <Compile Include="Infrastructure\RestConfiguration\IRestConfiguration.cs" />
     <Compile Include="Infrastructure\RestConfiguration\RestConfiguration.cs" />
+    <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="RestSharp">
