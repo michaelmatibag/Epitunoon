@@ -8,7 +8,7 @@ namespace Tests.IntegrationTests.RestExecutor
     [TestFixture]
     public class RestExecutorTests
     {
-        IRestConfiguration _restConfiguration;
+        private IRestConfiguration _restConfiguration;
 
         [SetUp]
         public void Setup()

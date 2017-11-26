@@ -5,9 +5,9 @@ namespace Services.Integration.RestExecutor
 {
     public class RestExecutor : IRestExecutor
     {
-        IRestConfiguration _restConfiguration;
-        RestClient _client;
-        RestRequest _request;
+        private readonly IRestConfiguration _restConfiguration;
+        private RestClient _client;
+        private RestRequest _request;
 
         public RestExecutor(IRestConfiguration restConfiguration)
         {
