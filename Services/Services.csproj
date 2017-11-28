@@ -36,6 +36,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,6 +48,8 @@
   <ItemGroup>
     <Compile Include="Infrastructure\RestConfiguration\IRestConfiguration.cs" />
     <Compile Include="Infrastructure\RestConfiguration\RestConfiguration.cs" />
+    <Compile Include="Infrastructure\Wmi\ProcessReturnCode.cs" />
+    <Compile Include="Infrastructure\Wmi\WmiProcess.cs" />
     <Compile Include="Integration\RestExecutor\IRestExecutor.cs" />
     <Compile Include="Integration\RestExecutor\RestExecutor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
