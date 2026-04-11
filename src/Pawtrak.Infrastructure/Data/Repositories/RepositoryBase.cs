@@ -8,6 +8,8 @@ namespace Pawtrak.Infrastructure.Data.Repositories;
 public abstract class RepositoryBase<T> : IRepository<T> where T : BaseEntity
 {
     protected readonly IDbConnectionFactory _connectionFactory;
+
+    // Snake_case table name, e.g. "owners", "visit_reports"
     protected abstract string TableName { get; }
 
     protected RepositoryBase(IDbConnectionFactory connectionFactory)
@@ -19,7 +21,7 @@ public abstract class RepositoryBase<T> : IRepository<T> where T : BaseEntity
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.QuerySingleOrDefaultAsync<T>(
-            $"SELECT * FROM {TableName} WHERE Id = @Id",
+            $"SELECT * FROM {TableName} WHERE id = @Id",
             new { Id = id });
     }
 
@@ -45,7 +47,7 @@ public abstract class RepositoryBase<T> : IRepository<T> where T : BaseEntity
     public virtual async Task DeleteAsync(T entity, CancellationToken cancellationToken = default)
     {
         using var conn = _connectionFactory.CreateConnection();
-        await conn.ExecuteAsync($"DELETE FROM {TableName} WHERE Id = @Id", new { entity.Id });
+        await conn.ExecuteAsync($"DELETE FROM {TableName} WHERE id = @Id", new { entity.Id });
     }
 
     protected abstract Task InsertAsync(IDbConnection conn, T entity);

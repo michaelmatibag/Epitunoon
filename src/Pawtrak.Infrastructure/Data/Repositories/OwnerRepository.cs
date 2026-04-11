@@ -7,7 +7,7 @@ namespace Pawtrak.Infrastructure.Data.Repositories;
 
 public sealed class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
 {
-    protected override string TableName => "Owners";
+    protected override string TableName => "owners";
 
     public OwnerRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory) { }
 
@@ -15,7 +15,7 @@ public sealed class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.QuerySingleOrDefaultAsync<Owner>(
-            "SELECT * FROM Owners WHERE Email = @Email",
+            "SELECT * FROM owners WHERE email = @Email",
             new { Email = email });
     }
 
@@ -24,9 +24,9 @@ public sealed class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
         using var conn = _connectionFactory.CreateConnection();
         const string sql = """
             SELECT o.*, d.*
-            FROM Owners o
-            LEFT JOIN Dogs d ON d.OwnerId = o.Id
-            WHERE o.Id = @Id
+            FROM owners o
+            LEFT JOIN dogs d ON d.owner_id = o.id
+            WHERE o.id = @Id
             """;
 
         Owner? owner = null;
@@ -35,7 +35,7 @@ public sealed class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
             owner ??= o;
             if (dog is not null) owner.Dogs.Add(dog);
             return owner;
-        }, new { Id = id }, splitOn: "Id");
+        }, new { Id = id }, splitOn: "id");
 
         return owner;
     }
@@ -45,9 +45,9 @@ public sealed class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
         using var conn = _connectionFactory.CreateConnection();
         const string sql = """
             SELECT o.*, hm.*
-            FROM Owners o
-            LEFT JOIN HouseholdMembers hm ON hm.OwnerId = o.Id
-            WHERE o.Id = @Id
+            FROM owners o
+            LEFT JOIN household_members hm ON hm.owner_id = o.id
+            WHERE o.id = @Id
             """;
 
         Owner? owner = null;
@@ -56,7 +56,7 @@ public sealed class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
             owner ??= o;
             if (member is not null) owner.HouseholdMembers.Add(member);
             return owner;
-        }, new { Id = id }, splitOn: "Id");
+        }, new { Id = id }, splitOn: "id");
 
         return owner;
     }
@@ -64,9 +64,9 @@ public sealed class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
     protected override async Task InsertAsync(IDbConnection conn, Owner entity)
     {
         const string sql = """
-            INSERT INTO Owners
-                (Id, FirstName, LastName, Email, PhoneNumber, Address, City, State, ZipCode,
-                 ProfilePhotoUrl, StripeCustomerId, CreatedAt, UpdatedAt)
+            INSERT INTO owners
+                (id, first_name, last_name, email, phone_number, address, city, state, zip_code,
+                 profile_photo_url, stripe_customer_id, created_at, updated_at)
             VALUES
                 (@Id, @FirstName, @LastName, @Email, @PhoneNumber, @Address, @City, @State, @ZipCode,
                  @ProfilePhotoUrl, @StripeCustomerId, @CreatedAt, @UpdatedAt)
@@ -77,12 +77,12 @@ public sealed class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
     protected override async Task UpdateCoreAsync(IDbConnection conn, Owner entity)
     {
         const string sql = """
-            UPDATE Owners SET
-                FirstName = @FirstName, LastName = @LastName, PhoneNumber = @PhoneNumber,
-                Address = @Address, City = @City, State = @State, ZipCode = @ZipCode,
-                ProfilePhotoUrl = @ProfilePhotoUrl, StripeCustomerId = @StripeCustomerId,
-                UpdatedAt = @UpdatedAt
-            WHERE Id = @Id
+            UPDATE owners SET
+                first_name = @FirstName, last_name = @LastName, phone_number = @PhoneNumber,
+                address = @Address, city = @City, state = @State, zip_code = @ZipCode,
+                profile_photo_url = @ProfilePhotoUrl, stripe_customer_id = @StripeCustomerId,
+                updated_at = @UpdatedAt
+            WHERE id = @Id
             """;
         await conn.ExecuteAsync(sql, entity);
     }

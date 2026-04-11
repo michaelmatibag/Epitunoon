@@ -7,7 +7,7 @@ namespace Pawtrak.Infrastructure.Data.Repositories;
 
 public sealed class VisitReportRepository : RepositoryBase<VisitReport>, IVisitReportRepository
 {
-    protected override string TableName => "VisitReports";
+    protected override string TableName => "visit_reports";
 
     public VisitReportRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory) { }
 
@@ -15,7 +15,7 @@ public sealed class VisitReportRepository : RepositoryBase<VisitReport>, IVisitR
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.QuerySingleOrDefaultAsync<VisitReport>(
-            "SELECT * FROM VisitReports WHERE BookingId = @BookingId",
+            "SELECT * FROM visit_reports WHERE booking_id = @BookingId",
             new { BookingId = bookingId });
     }
 
@@ -23,23 +23,33 @@ public sealed class VisitReportRepository : RepositoryBase<VisitReport>, IVisitR
     {
         using var conn = _connectionFactory.CreateConnection();
 
-        // Load the report
         var report = await conn.QuerySingleOrDefaultAsync<VisitReport>(
-            "SELECT * FROM VisitReports WHERE Id = @Id", new { Id = id });
+            "SELECT * FROM visit_reports WHERE id = @Id", new { Id = id });
 
         if (report is null) return null;
 
-        // Load task logs with task titles
-        report.TaskLogs = (await conn.QueryAsync<VisitTaskLog>(
-            "SELECT * FROM VisitTaskLogs WHERE VisitReportId = @Id", new { Id = id })).ToList();
+        // Task logs joined with routine task name + category
+        const string taskLogSql = """
+            SELECT vtl.*, rt.*
+            FROM visit_task_logs vtl
+            JOIN routine_tasks rt ON rt.id = vtl.routine_task_id
+            WHERE vtl.visit_report_id = @Id
+            ORDER BY rt.sort_order
+            """;
 
-        // Load photos
+        report.TaskLogs = (await conn.QueryAsync<VisitTaskLog, RoutineTask, VisitTaskLog>(
+            taskLogSql,
+            (log, task) => { log.RoutineTask = task; return log; },
+            new { Id = id },
+            splitOn: "id")).ToList();
+
         report.Photos = (await conn.QueryAsync<VisitPhoto>(
-            "SELECT * FROM VisitPhotos WHERE VisitReportId = @Id ORDER BY TakenAt", new { Id = id })).ToList();
+            "SELECT * FROM visit_photos WHERE visit_report_id = @Id ORDER BY taken_at",
+            new { Id = id })).ToList();
 
-        // Load GPS track
         report.GpsPoints = (await conn.QueryAsync<GpsPoint>(
-            "SELECT * FROM GpsPoints WHERE VisitReportId = @Id ORDER BY RecordedAt", new { Id = id })).ToList();
+            "SELECT * FROM gps_points WHERE visit_report_id = @Id ORDER BY recorded_at",
+            new { Id = id })).ToList();
 
         return report;
     }
@@ -47,8 +57,8 @@ public sealed class VisitReportRepository : RepositoryBase<VisitReport>, IVisitR
     protected override async Task InsertAsync(IDbConnection conn, VisitReport entity)
     {
         const string sql = """
-            INSERT INTO VisitReports
-                (Id, BookingId, Notes, Status, CompletedAt, CreatedAt, UpdatedAt)
+            INSERT INTO visit_reports
+                (id, booking_id, notes, status, completed_at, created_at, updated_at)
             VALUES
                 (@Id, @BookingId, @Notes, @Status, @CompletedAt, @CreatedAt, @UpdatedAt)
             """;
@@ -58,9 +68,9 @@ public sealed class VisitReportRepository : RepositoryBase<VisitReport>, IVisitR
     protected override async Task UpdateCoreAsync(IDbConnection conn, VisitReport entity)
     {
         const string sql = """
-            UPDATE VisitReports SET
-                Notes = @Notes, Status = @Status, CompletedAt = @CompletedAt, UpdatedAt = @UpdatedAt
-            WHERE Id = @Id
+            UPDATE visit_reports SET
+                notes = @Notes, status = @Status, completed_at = @CompletedAt, updated_at = @UpdatedAt
+            WHERE id = @Id
             """;
         await conn.ExecuteAsync(sql, entity);
     }

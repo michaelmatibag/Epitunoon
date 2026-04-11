@@ -1,6 +1,7 @@
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Pawtrak.Application.Services;
 using Pawtrak.Core.Interfaces;
 using Pawtrak.Core.Interfaces.Repositories;
 using Pawtrak.Core.Interfaces.Services;
@@ -16,8 +17,8 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Dapper — match C# PascalCase properties to column names automatically
-        DefaultTypeMap.MatchNamesWithUnderscores = false;
+        // Dapper: map snake_case DB columns → PascalCase C# properties automatically
+        DefaultTypeMap.MatchNamesWithUnderscores = true;
 
         // Database connection
         services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
@@ -35,10 +36,20 @@ public static class DependencyInjection
         // Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // External services
+        // External infrastructure services
         services.AddSingleton<IPaymentService, StripePaymentService>();
         services.AddSingleton<IFileStorageService, AzureBlobStorageService>();
         services.AddScoped<INotificationService, EmailNotificationService>();
+        services.AddScoped<IGpsTrackingService, GpsTrackingService>();
+
+        // Application services (use cases) — concrete implementations live here
+        services.AddScoped<IOwnerService, OwnerService>();
+        services.AddScoped<IWalkerService, WalkerService>();
+        services.AddScoped<IDogService, DogService>();
+        services.AddScoped<IRoutineTaskService, RoutineTaskService>();
+        services.AddScoped<IBookingService, BookingService>();
+        services.AddScoped<IVisitService, VisitService>();
+        services.AddScoped<IReviewService, ReviewService>();
 
         return services;
     }

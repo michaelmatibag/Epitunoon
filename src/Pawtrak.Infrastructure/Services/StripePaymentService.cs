@@ -6,8 +6,6 @@ namespace Pawtrak.Infrastructure.Services;
 
 public sealed class StripePaymentService : IPaymentService
 {
-    private const decimal PlatformFeePercent = 0.15m;
-
     public StripePaymentService(IConfiguration configuration)
     {
         StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"]
@@ -19,15 +17,14 @@ public sealed class StripePaymentService : IPaymentService
         CancellationToken cancellationToken = default)
     {
         var service = new PaymentIntentService();
-        var options = new PaymentIntentCreateOptions
+        var intent = await service.CreateAsync(new PaymentIntentCreateOptions
         {
             Amount = (long)(amount * 100), // Stripe uses cents
             Currency = currency,
-            CaptureMethod = "manual",       // authorize now, capture after job
+            CaptureMethod = "manual",      // authorise now, capture after job completes
             Metadata = new Dictionary<string, string> { ["bookingId"] = bookingId.ToString() }
-        };
+        }, cancellationToken: cancellationToken);
 
-        var intent = await service.CreateAsync(options, cancellationToken: cancellationToken);
         return intent.ClientSecret;
     }
 
@@ -42,10 +39,8 @@ public sealed class StripePaymentService : IPaymentService
         string paymentIntentId, string walkerStripeAccountId, decimal amount,
         CancellationToken cancellationToken = default)
     {
-        // Retrieve the charge from the payment intent
         var piService = new PaymentIntentService();
         var intent = await piService.GetAsync(paymentIntentId, cancellationToken: cancellationToken);
-        var chargeId = intent.LatestChargeId;
 
         var transferService = new TransferService();
         var transfer = await transferService.CreateAsync(new TransferCreateOptions
@@ -53,7 +48,7 @@ public sealed class StripePaymentService : IPaymentService
             Amount = (long)(amount * 100),
             Currency = "usd",
             Destination = walkerStripeAccountId,
-            SourceTransaction = chargeId,
+            SourceTransaction = intent.LatestChargeId,
             Metadata = new Dictionary<string, string> { ["paymentIntentId"] = paymentIntentId }
         }, cancellationToken: cancellationToken);
 
@@ -62,9 +57,6 @@ public sealed class StripePaymentService : IPaymentService
 
     public async Task<bool> RefundPaymentAsync(string paymentIntentId, CancellationToken cancellationToken = default)
     {
-        var piService = new PaymentIntentService();
-        var intent = await piService.GetAsync(paymentIntentId, cancellationToken: cancellationToken);
-
         var refundService = new RefundService();
         var refund = await refundService.CreateAsync(
             new RefundCreateOptions { PaymentIntent = paymentIntentId },
@@ -87,5 +79,19 @@ public sealed class StripePaymentService : IPaymentService
         }, cancellationToken: cancellationToken);
 
         return account.Id;
+    }
+
+    public async Task<string> CreateAccountLinkAsync(string stripeAccountId, CancellationToken cancellationToken = default)
+    {
+        var service = new AccountLinkService();
+        var link = await service.CreateAsync(new AccountLinkCreateOptions
+        {
+            Account = stripeAccountId,
+            ReturnUrl = "https://pawtrak.app/walker/onboarding-complete",
+            RefreshUrl = "https://pawtrak.app/walker/onboarding-refresh",
+            Type = "account_onboarding"
+        }, cancellationToken: cancellationToken);
+
+        return link.Url;
     }
 }

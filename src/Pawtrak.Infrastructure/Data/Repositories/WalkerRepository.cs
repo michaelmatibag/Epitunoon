@@ -7,7 +7,7 @@ namespace Pawtrak.Infrastructure.Data.Repositories;
 
 public sealed class WalkerRepository : RepositoryBase<Walker>, IWalkerRepository
 {
-    protected override string TableName => "Walkers";
+    protected override string TableName => "walkers";
 
     public WalkerRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory) { }
 
@@ -15,7 +15,7 @@ public sealed class WalkerRepository : RepositoryBase<Walker>, IWalkerRepository
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.QuerySingleOrDefaultAsync<Walker>(
-            "SELECT * FROM Walkers WHERE Email = @Email",
+            "SELECT * FROM walkers WHERE email = @Email",
             new { Email = email });
     }
 
@@ -23,7 +23,7 @@ public sealed class WalkerRepository : RepositoryBase<Walker>, IWalkerRepository
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.QueryAsync<Walker>(
-            "SELECT * FROM Walkers WHERE ZipCode = @ZipCode AND IsAvailable = 1",
+            "SELECT * FROM walkers WHERE zip_code = @ZipCode AND is_available = true",
             new { ZipCode = zipCode });
     }
 
@@ -32,9 +32,9 @@ public sealed class WalkerRepository : RepositoryBase<Walker>, IWalkerRepository
         using var conn = _connectionFactory.CreateConnection();
         const string sql = """
             SELECT w.*, r.*
-            FROM Walkers w
-            LEFT JOIN Reviews r ON r.WalkerId = w.Id
-            WHERE w.Id = @Id
+            FROM walkers w
+            LEFT JOIN reviews r ON r.walker_id = w.id
+            WHERE w.id = @Id
             """;
 
         Walker? walker = null;
@@ -43,7 +43,7 @@ public sealed class WalkerRepository : RepositoryBase<Walker>, IWalkerRepository
             walker ??= w;
             if (review is not null) walker.Reviews.Add(review);
             return walker;
-        }, new { Id = id }, splitOn: "Id");
+        }, new { Id = id }, splitOn: "id");
 
         return walker;
     }
@@ -51,10 +51,10 @@ public sealed class WalkerRepository : RepositoryBase<Walker>, IWalkerRepository
     protected override async Task InsertAsync(IDbConnection conn, Walker entity)
     {
         const string sql = """
-            INSERT INTO Walkers
-                (Id, FirstName, LastName, Email, PhoneNumber, Bio, City, State, ZipCode,
-                 ProfilePhotoUrl, HourlyRate, IsAvailable, IsBackgroundChecked,
-                 AverageRating, TotalReviews, StripeAccountId, CreatedAt, UpdatedAt)
+            INSERT INTO walkers
+                (id, first_name, last_name, email, phone_number, bio, city, state, zip_code,
+                 profile_photo_url, hourly_rate, is_available, is_background_checked,
+                 average_rating, total_reviews, stripe_account_id, created_at, updated_at)
             VALUES
                 (@Id, @FirstName, @LastName, @Email, @PhoneNumber, @Bio, @City, @State, @ZipCode,
                  @ProfilePhotoUrl, @HourlyRate, @IsAvailable, @IsBackgroundChecked,
@@ -66,14 +66,14 @@ public sealed class WalkerRepository : RepositoryBase<Walker>, IWalkerRepository
     protected override async Task UpdateCoreAsync(IDbConnection conn, Walker entity)
     {
         const string sql = """
-            UPDATE Walkers SET
-                FirstName = @FirstName, LastName = @LastName, PhoneNumber = @PhoneNumber,
-                Bio = @Bio, City = @City, State = @State, ZipCode = @ZipCode,
-                ProfilePhotoUrl = @ProfilePhotoUrl, HourlyRate = @HourlyRate,
-                IsAvailable = @IsAvailable, IsBackgroundChecked = @IsBackgroundChecked,
-                AverageRating = @AverageRating, TotalReviews = @TotalReviews,
-                StripeAccountId = @StripeAccountId, UpdatedAt = @UpdatedAt
-            WHERE Id = @Id
+            UPDATE walkers SET
+                first_name = @FirstName, last_name = @LastName, phone_number = @PhoneNumber,
+                bio = @Bio, city = @City, state = @State, zip_code = @ZipCode,
+                profile_photo_url = @ProfilePhotoUrl, hourly_rate = @HourlyRate,
+                is_available = @IsAvailable, is_background_checked = @IsBackgroundChecked,
+                average_rating = @AverageRating, total_reviews = @TotalReviews,
+                stripe_account_id = @StripeAccountId, updated_at = @UpdatedAt
+            WHERE id = @Id
             """;
         await conn.ExecuteAsync(sql, entity);
     }

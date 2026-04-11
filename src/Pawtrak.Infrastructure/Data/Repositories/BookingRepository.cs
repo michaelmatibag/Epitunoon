@@ -8,7 +8,7 @@ namespace Pawtrak.Infrastructure.Data.Repositories;
 
 public sealed class BookingRepository : RepositoryBase<Booking>, IBookingRepository
 {
-    protected override string TableName => "Bookings";
+    protected override string TableName => "bookings";
 
     public BookingRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory) { }
 
@@ -16,7 +16,7 @@ public sealed class BookingRepository : RepositoryBase<Booking>, IBookingReposit
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.QueryAsync<Booking>(
-            "SELECT * FROM Bookings WHERE OwnerId = @OwnerId ORDER BY ScheduledStart DESC",
+            "SELECT * FROM bookings WHERE owner_id = @OwnerId ORDER BY scheduled_start DESC",
             new { OwnerId = ownerId });
     }
 
@@ -24,7 +24,7 @@ public sealed class BookingRepository : RepositoryBase<Booking>, IBookingReposit
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.QueryAsync<Booking>(
-            "SELECT * FROM Bookings WHERE WalkerId = @WalkerId ORDER BY ScheduledStart DESC",
+            "SELECT * FROM bookings WHERE walker_id = @WalkerId ORDER BY scheduled_start DESC",
             new { WalkerId = walkerId });
     }
 
@@ -32,7 +32,7 @@ public sealed class BookingRepository : RepositoryBase<Booking>, IBookingReposit
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.QueryAsync<Booking>(
-            "SELECT * FROM Bookings WHERE Status = @Status",
+            "SELECT * FROM bookings WHERE status = @Status",
             new { Status = (int)status });
     }
 
@@ -41,11 +41,11 @@ public sealed class BookingRepository : RepositoryBase<Booking>, IBookingReposit
         using var conn = _connectionFactory.CreateConnection();
         const string sql = """
             SELECT b.*, o.*, w.*, d.*
-            FROM Bookings b
-            INNER JOIN Owners o ON o.Id = b.OwnerId
-            INNER JOIN Walkers w ON w.Id = b.WalkerId
-            INNER JOIN Dogs d ON d.Id = b.DogId
-            WHERE b.Id = @Id
+            FROM bookings b
+            INNER JOIN owners o ON o.id = b.owner_id
+            INNER JOIN walkers w ON w.id = b.walker_id
+            INNER JOIN dogs d ON d.id = b.dog_id
+            WHERE b.id = @Id
             """;
 
         var result = await conn.QueryAsync<Booking, Owner, Walker, Dog, Booking>(
@@ -58,7 +58,7 @@ public sealed class BookingRepository : RepositoryBase<Booking>, IBookingReposit
                 return booking;
             },
             new { Id = id },
-            splitOn: "Id,Id,Id");
+            splitOn: "id,id,id");
 
         return result.FirstOrDefault();
     }
@@ -66,10 +66,10 @@ public sealed class BookingRepository : RepositoryBase<Booking>, IBookingReposit
     protected override async Task InsertAsync(IDbConnection conn, Booking entity)
     {
         const string sql = """
-            INSERT INTO Bookings
-                (Id, OwnerId, WalkerId, DogId, ScheduledStart, ScheduledEnd, ActualStart, ActualEnd,
-                 Status, BaseAmount, PlatformFee, WalkerEarnings, TipAmount, SpecialInstructions,
-                 StripePaymentIntentId, CreatedAt, UpdatedAt)
+            INSERT INTO bookings
+                (id, owner_id, walker_id, dog_id, scheduled_start, scheduled_end, actual_start, actual_end,
+                 status, base_amount, platform_fee, walker_earnings, tip_amount, special_instructions,
+                 stripe_payment_intent_id, created_at, updated_at)
             VALUES
                 (@Id, @OwnerId, @WalkerId, @DogId, @ScheduledStart, @ScheduledEnd, @ActualStart, @ActualEnd,
                  @Status, @BaseAmount, @PlatformFee, @WalkerEarnings, @TipAmount, @SpecialInstructions,
@@ -81,11 +81,11 @@ public sealed class BookingRepository : RepositoryBase<Booking>, IBookingReposit
     protected override async Task UpdateCoreAsync(IDbConnection conn, Booking entity)
     {
         const string sql = """
-            UPDATE Bookings SET
-                ActualStart = @ActualStart, ActualEnd = @ActualEnd, Status = @Status,
-                TipAmount = @TipAmount, SpecialInstructions = @SpecialInstructions,
-                StripePaymentIntentId = @StripePaymentIntentId, UpdatedAt = @UpdatedAt
-            WHERE Id = @Id
+            UPDATE bookings SET
+                actual_start = @ActualStart, actual_end = @ActualEnd, status = @Status,
+                tip_amount = @TipAmount, special_instructions = @SpecialInstructions,
+                stripe_payment_intent_id = @StripePaymentIntentId, updated_at = @UpdatedAt
+            WHERE id = @Id
             """;
         await conn.ExecuteAsync(sql, entity);
     }

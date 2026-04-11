@@ -7,7 +7,7 @@ namespace Pawtrak.Infrastructure.Data.Repositories;
 
 public sealed class ReviewRepository : RepositoryBase<Review>, IReviewRepository
 {
-    protected override string TableName => "Reviews";
+    protected override string TableName => "reviews";
 
     public ReviewRepository(IDbConnectionFactory connectionFactory) : base(connectionFactory) { }
 
@@ -15,7 +15,7 @@ public sealed class ReviewRepository : RepositoryBase<Review>, IReviewRepository
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.QueryAsync<Review>(
-            "SELECT * FROM Reviews WHERE WalkerId = @WalkerId AND IsPublic = 1 ORDER BY CreatedAt DESC",
+            "SELECT * FROM reviews WHERE walker_id = @WalkerId AND is_public = true ORDER BY created_at DESC",
             new { WalkerId = walkerId });
     }
 
@@ -23,7 +23,7 @@ public sealed class ReviewRepository : RepositoryBase<Review>, IReviewRepository
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.QueryAsync<Review>(
-            "SELECT * FROM Reviews WHERE OwnerId = @OwnerId ORDER BY CreatedAt DESC",
+            "SELECT * FROM reviews WHERE owner_id = @OwnerId ORDER BY created_at DESC",
             new { OwnerId = ownerId });
     }
 
@@ -31,7 +31,7 @@ public sealed class ReviewRepository : RepositoryBase<Review>, IReviewRepository
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.QuerySingleOrDefaultAsync<Review>(
-            "SELECT * FROM Reviews WHERE BookingId = @BookingId",
+            "SELECT * FROM reviews WHERE booking_id = @BookingId",
             new { BookingId = bookingId });
     }
 
@@ -39,15 +39,15 @@ public sealed class ReviewRepository : RepositoryBase<Review>, IReviewRepository
     {
         using var conn = _connectionFactory.CreateConnection();
         return await conn.ExecuteScalarAsync<double>(
-            "SELECT COALESCE(AVG(\"Rating\"::FLOAT), 0) FROM \"Reviews\" WHERE \"WalkerId\" = @WalkerId AND \"IsPublic\" = TRUE",
+            "SELECT COALESCE(AVG(rating::FLOAT), 0) FROM reviews WHERE walker_id = @WalkerId AND is_public = true",
             new { WalkerId = walkerId });
     }
 
     protected override async Task InsertAsync(IDbConnection conn, Review entity)
     {
         const string sql = """
-            INSERT INTO Reviews
-                (Id, BookingId, OwnerId, WalkerId, Rating, Comment, IsPublic, CreatedAt, UpdatedAt)
+            INSERT INTO reviews
+                (id, booking_id, owner_id, walker_id, rating, comment, is_public, created_at, updated_at)
             VALUES
                 (@Id, @BookingId, @OwnerId, @WalkerId, @Rating, @Comment, @IsPublic, @CreatedAt, @UpdatedAt)
             """;
@@ -57,9 +57,9 @@ public sealed class ReviewRepository : RepositoryBase<Review>, IReviewRepository
     protected override async Task UpdateCoreAsync(IDbConnection conn, Review entity)
     {
         const string sql = """
-            UPDATE Reviews SET
-                Rating = @Rating, Comment = @Comment, IsPublic = @IsPublic, UpdatedAt = @UpdatedAt
-            WHERE Id = @Id
+            UPDATE reviews SET
+                rating = @Rating, comment = @Comment, is_public = @IsPublic, updated_at = @UpdatedAt
+            WHERE id = @Id
             """;
         await conn.ExecuteAsync(sql, entity);
     }
