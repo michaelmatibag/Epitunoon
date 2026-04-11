@@ -49,17 +49,31 @@ TestResults/
 *.coverage
 *.coveragexml
 
-## OS
+## OS — macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+
+## OS — Windows
 Thumbs.db
 desktop.ini
+ehthumbs.db
 
-## IDE
+## JetBrains Rider
 .idea/
 *.Resharper
 *_Resharper.*
 *.dotCover
-.vscode/settings.json
+*.dotSettings.user
+
+## Windsurf / VS Code
+.vscode/
+.windsurf/
+.windsurfrules
 
 ## Azure Functions
 local.settings.json
