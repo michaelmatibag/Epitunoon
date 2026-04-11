@@ -13,8 +13,6 @@
     <!-- Data access (PostgreSQL + Dapper) -->
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Npgsql" Version="8.0.3" />
-    <!-- Database migrations (open-source) -->
-    <PackageReference Include="DbUp-PostgreSQL" Version="5.0.14" />
     <!-- Payments -->
     <PackageReference Include="Stripe.net" Version="46.2.1" />
     <!-- File storage -->
