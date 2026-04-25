@@ -1,0 +1,317 @@
+/* ── Reset & Base ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  width: 380px;
+  min-height: 200px;
+  max-height: 560px;
+  overflow: hidden;
+  background: #111120;
+  color: #d4d4ec;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.brand-logo {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.brand-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.brand-hint {
+  font-size: 11px;
+  color: #4a4a6a;
+}
+
+kbd {
+  font-family: inherit;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: #8888bb;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.btn {
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  transition: opacity 0.1s, background 0.1s;
+}
+
+.btn:active { opacity: 0.8; }
+
+.btn-primary {
+  background: #6e5af0;
+  color: #fff;
+}
+
+.btn-primary:hover { background: #7d6bf5; }
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.06);
+  color: #9999bb;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-ghost:hover { background: rgba(255, 255, 255, 0.10); }
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #44445a;
+  font-size: 13px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color 0.1s, background 0.1s;
+  line-height: 1;
+}
+
+.btn-icon:hover             { color: #9999cc; background: rgba(255,255,255,0.06); }
+.btn-icon--danger:hover     { color: #e05555; background: rgba(220,60,60,0.10);   }
+
+/* ── Search ──────────────────────────────────────────────────────────────── */
+.search-wrap {
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+}
+
+.search-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #d4d4ec;
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+  padding: 7px 11px;
+  transition: border-color 0.15s;
+}
+
+.search-input::placeholder { color: #33334a; }
+.search-input:focus         { border-color: rgba(110, 90, 240, 0.5); }
+
+/* ── Prompt List ─────────────────────────────────────────────────────────── */
+.prompt-list {
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a40 transparent;
+}
+
+.prompt-list::-webkit-scrollbar       { width: 4px; }
+.prompt-list::-webkit-scrollbar-track { background: transparent; }
+.prompt-list::-webkit-scrollbar-thumb { background: #2a2a40; border-radius: 2px; }
+
+.prompt-card {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.08s;
+}
+
+.prompt-card:last-child { border-bottom: none; }
+.prompt-card:hover      { background: rgba(255, 255, 255, 0.03); }
+
+.prompt-card-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.prompt-card-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.prompt-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #d4d4ec;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prompt-badge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 500;
+  color: #8877cc;
+  background: rgba(110, 90, 240, 0.12);
+  border: 1px solid rgba(110, 90, 240, 0.18);
+  padding: 1px 7px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.prompt-card-preview {
+  font-size: 11px;
+  color: #3f3f5c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prompt-card-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.prompt-card:hover .prompt-card-actions { opacity: 1; }
+
+/* ── Empty State ─────────────────────────────────────────────────────────── */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 30px 20px;
+  color: #3a3a55;
+  text-align: center;
+}
+
+.empty-icon { font-size: 32px; opacity: 0.4; }
+.empty-state p { font-size: 13px; }
+
+/* ── Form Panel ──────────────────────────────────────────────────────────── */
+.form-panel {
+  position: absolute;
+  inset: 0;
+  background: #111120;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.form-header h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6666aa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #3a3a55;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #d4d4ec;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  padding: 8px 11px;
+  transition: border-color 0.15s;
+  resize: none;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder { color: #2a2a42; }
+
+.form-input:focus,
+.form-textarea:focus { border-color: rgba(110, 90, 240, 0.5); }
+
+.form-error {
+  font-size: 11px;
+  color: #e05555;
+  background: rgba(220, 60, 60, 0.08);
+  border: 1px solid rgba(220, 60, 60, 0.15);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}

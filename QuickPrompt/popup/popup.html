@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuickPrompt</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ── Header ──────────────────────────────────────────────────── -->
+    <header class="header">
+      <div class="brand">
+        <span class="brand-logo">⚡</span>
+        <div class="brand-text">
+          <span class="brand-name">QuickPrompt</span>
+          <span class="brand-hint">Type <kbd>//</kbd> in Claude or ChatGPT</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btnNew">+ New</button>
+    </header>
+
+    <!-- ── Search ──────────────────────────────────────────────────── -->
+    <div class="search-wrap">
+      <input
+        type="text"
+        class="search-input"
+        id="searchInput"
+        placeholder="Search prompts…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <!-- ── Prompt List ─────────────────────────────────────────────── -->
+    <div class="prompt-list" id="promptList">
+      <!-- Rendered by popup.js -->
+    </div>
+
+    <!-- ── Empty State ─────────────────────────────────────────────── -->
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <div class="empty-icon">⚡</div>
+      <p>No prompts yet.</p>
+      <button class="btn btn-primary" id="btnNewEmpty">Add your first prompt</button>
+    </div>
+
+    <!-- ── Form Panel (overlays the list) ─────────────────────────── -->
+    <div class="form-panel" id="formPanel" style="display:none;">
+      <div class="form-header">
+        <h2 id="formTitle">New Prompt</h2>
+        <button class="btn-icon" id="btnCloseForm" title="Close">✕</button>
+      </div>
+
+      <div class="form-body">
+        <label class="form-label" for="fTitle">Title</label>
+        <input
+          type="text"
+          class="form-input"
+          id="fTitle"
+          placeholder="e.g. Code Review"
+          maxlength="60"
+        />
+
+        <label class="form-label" for="fCategory">
+          Category <span class="optional">(optional)</span>
+        </label>
+        <input
+          type="text"
+          class="form-input"
+          id="fCategory"
+          placeholder="e.g. Coding"
+          maxlength="30"
+        />
+
+        <label class="form-label" for="fText">Prompt Text</label>
+        <textarea
+          class="form-textarea"
+          id="fText"
+          placeholder="Your prompt…"
+          rows="5"
+        ></textarea>
+
+        <p class="form-error" id="formError" style="display:none;"></p>
+
+        <div class="form-actions">
+          <button class="btn btn-ghost" id="btnCancel">Cancel</button>
+          <button class="btn btn-primary" id="btnSave">Save Prompt</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- .app -->
+
+  <script src="../shared/storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
